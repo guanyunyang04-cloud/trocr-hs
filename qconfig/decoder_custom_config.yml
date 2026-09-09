@@ -1,0 +1,157 @@
+# Layer name not to be quantized
+
+# By default, global quantization is disabled, and only CUBE quantization is turned on.
+common_config:
+  {
+    quant_enable: False,
+    weight_quant_params:
+      {
+        quantizer: "ArqWeightFakeQuantize"
+      },
+    activation_quant_params:
+      {
+        quantizer: "UlqFakeQuantize"
+      }
+  }
+
+# layer config by types user defined for overriding
+override_layer_types:
+  [
+    {
+      layer_type: "torch.nn.Linear",
+      weight_quant_params:
+        {
+          quantizer: "ArqWeightFakeQuantize",
+          quantizer_args:
+            {
+              num_bits: 8,
+              observer: "ArqObserver",
+              channel_wise: True
+            }
+        },
+      activation_quant_params:
+        {
+          quantizer: "UlqFakeQuantize",
+          quantizer_args:
+            {
+              observer: "IFMRObserver",
+              num_bits: 8,
+              batch_num: 8
+            }
+        }
+    },
+    {
+      layer_type: ["torch.nn.Conv2d", "torch.nn.ConvTranspose2d"],
+      weight_quant_params:
+        {
+          quantizer: "ArqWeightFakeQuantize",
+          quantizer_args:
+            {
+              observer: "ArqObserver",
+              num_bits: 8,
+              channel_wise: true
+            }
+        },
+      activation_quant_params:
+        {
+          quantizer: "UlqFakeQuantize",
+          quantizer_args:
+            {
+              observer: "IFMRObserver",
+              num_bits: 8,
+              batch_num: 8
+            }
+        }
+    },
+    {
+      layer_type: ["torch.nn.AdaptiveAvgPool2d", "torch.nn.AdaptiveMaxPool2d", "torch.nn.AvgPool2d", "torch.nn.MaxPool2d"],
+      activation_quant_params:
+        {
+          quantizer: "UlqFakeQuantize",
+          quantizer_args:
+            {
+              observer: "IFMRObserver",
+              num_bits: 8,
+              batch_num: 8
+            }
+        }
+    },
+    {
+      layer_type: ["torch.matmul", "operator.matmul", "matmul"],
+      activation_quant_params:[
+        {
+          quantizer: "LuqActivationFakeQuantize",
+          quantizer_args:
+            {
+              observer: "IFMRObserver",
+              num_bits: 8,
+              batch_num: 8,
+              qscheme: "symmetric", # qscheme should be symmetric for matmul node
+              with_offset: False, # with_offset be false to keep IFMRObserver symmetric
+            }
+        },
+        {
+          quantizer: "LuqActivationFakeQuantize",
+          quantizer_args:
+            {
+              observer: "IFMRObserver",
+              num_bits: 8,
+              batch_num: 8,
+              qscheme: "symmetric", # qscheme should be symmetric for matmul node
+              with_offset: False, # with_offset be false to keep IFMRObserver symmetric
+            }
+        }
+      ]
+
+    },
+#    {
+#      layer_type: ["torch.reshape", "reshape"],
+#      activation_quant_params:
+#        {
+#          quantizer: "UlqFakeQuantize",
+#          quantizer_args:
+#            {
+#              observer: "IFMRObserver",
+#              num_bits: 8,
+#              batch_num: 8
+#            }
+#        }
+#    },
+  ]
+override_layer_configs:
+  [
+    {
+      layer_name: [
+          "matmul_3",
+          "matmul_7",
+          "matmul_11",
+          "matmul_15",
+          "matmul_19",
+          "matmul_23",
+      ],
+      activation_quant_params: [
+        {
+          quantizer: "LuqActivationFakeQuantize",
+          quantizer_args:
+            {
+              observer: "IFMRObserver",
+              num_bits: 12,
+              batch_num: 8,
+              qscheme: "symmetric", # qscheme should be symmetric for matmul node
+              with_offset: False, # with_offset be false to keep IFMRObserver symmetric
+            }
+        },
+        {
+          quantizer: "LuqActivationFakeQuantize",
+          quantizer_args:
+            {
+              observer: "IFMRObserver",
+              num_bits: 8,
+              batch_num: 8,
+              qscheme: "symmetric", # qscheme should be symmetric for matmul node
+              with_offset: False, # with_offset be false to keep IFMRObserver symmetric
+            }
+        }
+      ]
+    },
+  ]

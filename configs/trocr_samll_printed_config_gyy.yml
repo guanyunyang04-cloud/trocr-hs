@@ -1,0 +1,18 @@
+model_config:
+  model_name: './trocr-small-printed'
+train_config:
+  train_batch_size: 1
+  val_batch_size: 1
+  epoch: 200
+  lr: 0.00005
+  warmup_ratio: 0.1
+  save_total_limit: 2
+  load_best_model_at_end: true
+  early_stopping_patience: null #
+  device: 0
+  output_dir_prefix: trocr-small-printed-gyy
+dataset_config:
+  use_lpd: false
+  dataset_folder: ./dataset
+  train_dir: train
+  val_dir: val

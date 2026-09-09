@@ -1,0 +1,43 @@
+# Local environments and IDE files
+.venv/
+venv/
+trocr-env/
+.idea/
+.vscode/
+__pycache__/
+*.py[cod]
+.DS_Store
+
+# Datasets and labels
+dataset/
+data/
+*.csv
+*.jpg
+*.jpeg
+*.png
+*.bmp
+
+# Model checkpoints and proprietary packages
+checkpoints/
+output/
+weights/
+*.bin
+*.pt
+*.pth
+*.onnx
+*.safetensors
+*.tar.gz
+*.whl
+
+# Local calibration/deployment artifacts
+*.npy
+*.npz
+*.log
+*.tmp
+text_tokens.*
+attention_mask.*
+last_hidden_states.*
+
+# Local command notes may contain private paths or host information
+SERVER_COMMANDS.txt
+LOCAL_COMMANDS.txt
